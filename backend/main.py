@@ -158,7 +158,7 @@ def update_goal(goal: schemas.GoalCreate, db: Session = Depends(get_db)):
     return crud.create_or_update_goal(db, goal=goal)
 
 # AI Endpoints
-import agent
+from . import agent
 @app.post("/ai/chat", response_model=schemas.AIChatResponse)
 def chat_with_ai(request: schemas.AIChatRequest):
     return agent.get_gemini_response(request.message, request.conversation_history)

@@ -1,6 +1,6 @@
 import requests
 import time
-import schemas
+from . import schemas
 
 def search_food_database(query: str):
     """

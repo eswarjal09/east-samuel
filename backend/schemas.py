@@ -18,7 +18,7 @@ class FoodItemCreate(FoodItemBase):
 class FoodItem(FoodItemBase):
     id: int
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class FoodBase(BaseModel):
     name: str
@@ -42,7 +42,7 @@ class Food(FoodBase):
     id: int
     notes: Optional[str] = None
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Exercise Schemas
 class ExerciseItemBase(BaseModel):
@@ -54,7 +54,7 @@ class ExerciseItemCreate(ExerciseItemBase):
 class ExerciseItem(ExerciseItemBase):
     id: int
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class ExerciseBase(BaseModel):
     name: str
@@ -75,7 +75,7 @@ class ExerciseCreate(BaseModel):
 class Exercise(ExerciseBase):
     id: int
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Health Schemas
 class HealthBase(BaseModel):
@@ -90,7 +90,7 @@ class HealthCreate(HealthBase):
 class Health(HealthBase):
     id: int
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Goal Schemas
 class GoalBase(BaseModel):
@@ -105,7 +105,7 @@ class GoalCreate(GoalBase):
 class Goal(GoalBase):
     id: int
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # AI Schemas
 class AIChatRequest(BaseModel):
