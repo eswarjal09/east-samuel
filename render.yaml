@@ -2,6 +2,7 @@ services:
   - type: web
     name: macrofactor-backend
     env: python
+    plan: free
     buildCommand: pip install -r backend/requirements.txt
     startCommand: gunicorn backend.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
     envVars:
@@ -18,3 +19,4 @@ databases:
   - name: macrofactor-db
     databaseName: macrofactor
     user: macrofactor
+    plan: free
