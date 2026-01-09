@@ -2,6 +2,7 @@ import os
 import google.generativeai as genai
 from dotenv import load_dotenv
 from . import schemas, tools
+from pathlib import Path
 
 # Load .env from the same directory as this file
 env_path = Path(__file__).parent / '.env'
