@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../api/client';
+import { useDate } from './DateContext';
 
 const HealthContext = createContext();
 
@@ -24,18 +25,20 @@ export function HealthProvider({ children }) {
         fetchMetrics();
     }, []);
 
-    const addMetric = async (type, value, unit) => {
+    const { selectedDate } = useDate();
+
+    const addMetric = async (type, value, unit, notes, date = null) => {
+        const dateToUse = date || selectedDate;
         try {
             const newMetric = await api.createHealthMetric({
                 type,
                 value: Number(value),
                 unit,
-                date: new Date().toISOString().split('T')[0],
+                date: dateToUse,
+                // notes: notes // Backend doesn't support notes yet, but keeping signature consistent
             });
 
             setMetrics((prev) => {
-                // Remove existing metric of same type for same day if exists (optional logic, keeping simple for now)
-                // Ideally backend handles this or we just append.
                 return [newMetric, ...prev];
             });
         } catch (error) {
