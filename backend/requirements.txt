@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+psycopg2-binary
+google-generativeai
+python-dotenv
+openfoodfacts
+gunicorn
