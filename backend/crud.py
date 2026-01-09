@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-import models, schemas
+from . import models, schemas
 
 # Food CRUD
 def get_food_items(db: Session):

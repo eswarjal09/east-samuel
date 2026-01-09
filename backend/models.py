@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, Date
-from database import Base
+from .database import Base
 
 class FoodLog(Base):
     __tablename__ = "food_logs"
