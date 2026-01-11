@@ -146,3 +146,41 @@ def calculate_recipe_macros(ingredients: list[dict], portions: int = 1):
         "fat": round(total_fat / portions, 1),
         "weight_per_portion": round(total_weight / portions, 1)
     }
+
+def add_food_to_database(name: str, calories: int, protein: float, carbs: float, fat: float, serving_unit: str = "grams", serving_weight: float = 0.0):
+    """
+    Adds a verified food item to the database. 
+    ONLY use this tool when the user explicitly agrees to save the item (e.g., "Yes, add it", "Save to DB").
+    
+    Args:
+        name: Name of the food (e.g. "Banana", "Chicken Curry (1 portion)").
+        calories: Calories (kcal).
+        protein: Protein (g).
+        carbs: Carbs (g).
+        fat: Fat (g).
+        serving_unit: "grams" or "serving".
+        serving_weight: Weight in grams if serving_unit is "serving". 0.0 otherwise.
+        
+    Returns:
+        Status message string.
+    """
+    from . import crud, database  # Local import to avoid circular dependency issues if any
+    
+    db = database.SessionLocal()
+    try:
+        item_create = schemas.FoodItemCreate(
+            name=name,
+            calories=calories,
+            protein=protein,
+            carbs=carbs,
+            fat=fat,
+            serving_unit=serving_unit,
+            serving_weight=serving_weight if serving_weight > 0 else None
+        )
+        
+        created_item = crud.create_food_item(db, item_create)
+        return f"Successfully saved '{created_item.name}' to the database with ID {created_item.id}."
+    except Exception as e:
+        return f"Error saving food to database: {str(e)}"
+    finally:
+        db.close()

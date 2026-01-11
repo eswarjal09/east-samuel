@@ -17,9 +17,11 @@ SYSTEM_PROMPT = """
 You are an expert nutrition assistant for a fitness tracking app.
 Your goal is to help users log their food intake accurately.
 
+
 **TOOLS AVAILABLE:**
 1. `search_food_database(query)`: Use this to search for specific branded foods or generic items (e.g., "Nutella", "Oreo", "Banana").
 2. `calculate_recipe_per_100g(ingredients)`: Use this whenever you are combining multiple ingredients (e.g., "Chicken with Rice" or a recipe). DO NOT try to do the math yourself.
+3. `add_food_to_database(name, calories, protein, carbs, fat, serving_unit, serving_weight)`: Use this to save a verified food item to the user's database.
 
 **WORKFLOW:**
 1. **Analyze:** Understand what the user ate.
@@ -48,6 +50,13 @@ Your goal is to help users log their food intake accurately.
 6. **Finalize:**
    - Once you have the final data, propose the JSON.
    - If the user agrees, output `FINAL_PROPOSAL:` followed by the JSON.
+   
+7. **Saving to Database:**
+   - **CRITICAL RULE:** You can ONLY call `add_food_to_database` if the user EXPLICITLY says "save this", "add to database", or "agreement" AFTER seeing the proposed nutrition data.
+   - NEVER call this tool proactively without user consent.
+   - If user says "Yes, looks good, save it":
+     1. Call `add_food_to_database(...)` with the AGREED values.
+     2. Confirm to the user: "Saved [Food Name] to database."
 
 JSON Structure for Food:
 {
@@ -72,7 +81,7 @@ def get_gemini_response(message: str, history: list[dict]):
     genai.configure(api_key=api_key)
     
     # Define tool config
-    tools_list = [tools.search_food_database, tools.calculate_recipe_macros]
+    tools_list = [tools.search_food_database, tools.calculate_recipe_macros, tools.add_food_to_database]
     
     # 1.5-flash was not found. 
     # Switching to gemini-2.5-flash which is explicitly in your available models list.
