@@ -74,10 +74,21 @@ def search_food_database(query: str):
                     if carb is None: carb = (safe_float(nutriments.get('carbohydrates_serving')) / serving_qty) * 100
                     if fat is None: fat = (safe_float(nutriments.get('fat_serving')) / serving_qty) * 100
 
-            # If still missing critical energy info, skip
             if kcal is None:
                 continue
                 
+            # Get explicit serving weight
+            serving_weight = safe_float(product.get('serving_quantity'))
+
+            # Smart Back-calculation: If serving weight is missing, but we have both 100g and serving data, derive it.
+            # Weight = (Value_serving / Value_100g) * 100
+            if serving_weight <= 0:
+                k_100 = safe_float(nutriments.get('energy-kcal_100g'))
+                k_srv = safe_float(nutriments.get('energy-kcal_serving'))
+                
+                if k_100 > 0 and k_srv > 0:
+                    serving_weight = (k_srv / k_100) * 100
+            
             item = {
                 "name": product.get('product_name', 'Unknown'),
                 "brand": product.get('brands', 'Unknown'),
@@ -86,12 +97,11 @@ def search_food_database(query: str):
                 "carbs": round(safe_float(carb), 1),
                 "fat": round(safe_float(fat), 1),
                 "serving_size": product.get('serving_size', '100g'),
-                "serving_weight": safe_float(product.get('serving_quantity'))  # Normalized weight of serving in grams
+                "serving_weight": round(serving_weight, 1) if serving_weight > 0 else 0.0
             }
             simplified_results.append(item)
             count += 1
             
-        print(f"[DEBUG] Found {len(simplified_results)} results for '{query}'")
         return simplified_results
         
     except Exception as e:
@@ -118,11 +128,9 @@ def calculate_recipe_macros(ingredients: list[dict], portions: int = 1):
     total_fat = 0
     
     for ing_dict in ingredients:
-        # Validate using Pydantic manually for safety
         try:
             ing = schemas.IngredientInput(**ing_dict)
         except Exception:
-            # If validation fails, skip or try to use raw dict with defaults
             continue
 
         w = ing.weight_g

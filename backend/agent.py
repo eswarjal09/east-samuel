@@ -8,11 +8,6 @@ from pathlib import Path
 env_path = Path(__file__).parent / '.env'
 load_dotenv(dotenv_path=env_path)
 
-# Configure specific API key if you have one, or use env var
-# genai.configure(api_key=os.environ["GEMINI_API_KEY"]) 
-# For this environment, we might need to ask user for key or assume it's set.
-# I will write a placeholder implementation that expects the key.
-
 SYSTEM_PROMPT = """
 You are an expert nutrition assistant for a fitness tracking app.
 Your goal is to help users log their food intake accurately.
@@ -101,8 +96,6 @@ def get_gemini_response(message: str, history: list[dict]):
             "role": msg.get("role"),
             "parts": msg.get("parts", [msg.get("text", "")])
         })
-
-    print(f"[DEBUG] Starting Gemini Chat with history length: {len(formatted_history)}")
     
     # Enable automatic tool execution
     chat = model.start_chat(
@@ -110,14 +103,10 @@ def get_gemini_response(message: str, history: list[dict]):
         enable_automatic_function_calling=True
     )
     
-    print(f"[DEBUG] Sending message to Gemini: '{message}'")
     response = chat.send_message(message)
     text_response = response.text
-    print(f"[DEBUG] Gemini Response: {text_response[:100]}...") # Print first 100 chars
+    print(f"[DEBUG] Gemini Response: {text_response[:500]}...") 
 
-    # --- DEBUG TRACE START ---
-    # Inspect history to see what tools were called automatically
-    print("\n--- [DEBUG-TRACE] AGENT THOUGHT PROCESS ---")
     for msg in chat.history:
         for part in msg.parts:
             if fn := part.function_call:
